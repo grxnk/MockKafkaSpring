@@ -27,7 +27,7 @@ public class KafkaProducerService {
             return(ResponseEntity.ok("200: OK"));
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("500: Internal Server Error");
         }
 
