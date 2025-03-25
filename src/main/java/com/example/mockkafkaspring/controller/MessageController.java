@@ -1,6 +1,6 @@
 package com.example.mockkafkaspring.controller;
 
-import com.example.mockkafkaspring.dto.DelayRequest;
+import com.example.mockkafkaspring.dto.MultiDelayRequest;
 import com.example.mockkafkaspring.dto.MessageRequest;
 import com.example.mockkafkaspring.model.KafkaMessage;
 import com.example.mockkafkaspring.service.DelayService;
@@ -29,16 +29,23 @@ public class MessageController {
     }
 
     @PostMapping("/post-delay")
-    public String handleDelay(@RequestBody DelayRequest request) {
-        delayService.setDelay(request.getDelay());
-        return "Delay set to: " + delayService.getDelay() + " ms";
+    public String handleMultiDelay(@RequestBody MultiDelayRequest request) {
+        StringBuilder response = new StringBuilder();
+        for (MultiDelayRequest.DelayEntry entry : request.getDelays()) {
+            delayService.setDelay(entry.getEndpoint(), entry.getDelay());
+            response.append("Set delay ")
+                    .append(entry.getDelay())
+                    .append("ms for ")
+                    .append(entry.getEndpoint())
+                    .append("\n");
+        }
+        return response.toString();
     }
-
 
     @PostMapping("/post-message")
     public String handleMessage(@RequestBody MessageRequest request) throws InterruptedException {
         log.info("Received request: {}", request);
-        delayService.applyDelay();
+        delayService.applyDelay("/post-message");
 
         KafkaMessage msg = new KafkaMessage();
         msg.setMsg_id(UUID.randomUUID().toString());
