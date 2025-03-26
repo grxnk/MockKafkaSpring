@@ -63,6 +63,8 @@ public class MessageController {
 
     @GetMapping("/mock-data")
     public List<KafkaMessage> getMockData() {
+        delayService.applyDelay("/mock-data");
+
         return mockStorage;
     }
 }
